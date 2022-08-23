@@ -1,0 +1,9 @@
+<library path="cnr_ur_hardware_interface">
+  <class name="cb2_hw/UrRobotHW"
+         type="cb2_hw::UrRobotHW"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+		ROS2 Control System Driver for the Universal Robots series CB2.
+    </description>
+  </class>
+</library>

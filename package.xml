@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>ur_hardware_interface</name>
+  <version>2.1.2</version>
+  <description>The ros2 ur_hardware_interface package</description>
+
+  <maintainer email="stiima@todo.todo">stiima</maintainer>
+
+  <license>BSD-3-Clause</license>
+  <author>Stiima</author>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>controller_manager</depend>
+  <depend>controller_manager_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>hardware_interface</depend>
+  <depend>pluginlib</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>ur_bringup</depend>
+  <depend>ur_client_library</depend>
+  <depend>ur_controllers</depend>
+  <depend>ur_dashboard_msgs</depend>
+  <depend>ur_description</depend>
+  <depend>ur_msgs</depend>
+
+  <test_depend>launch_testing_ament_cmake</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
+</package>
