@@ -1,2 +1,1 @@
-cb2_hw
-HARDWARE INTERFACE FOR THE OLD UR CB2 VERSION!!!
+ROS2 hardware interface for the old CB2 Universal robot
