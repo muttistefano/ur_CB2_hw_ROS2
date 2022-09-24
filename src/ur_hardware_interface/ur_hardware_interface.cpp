@@ -9,7 +9,7 @@ UrRobotHW::UrRobotHW()
 {
 }
 
-CallbackReturn UrRobotHW::on_init(const hardware_interface::HardwareInfo& system_info)
+hardware_interface::CallbackReturn UrRobotHW::on_init(const hardware_interface::HardwareInfo& system_info)
 {
 
   if (hardware_interface::SystemInterface::on_init(system_info) != CallbackReturn::SUCCESS) {
@@ -166,7 +166,7 @@ std::vector<hardware_interface::CommandInterface> UrRobotHW::export_command_inte
 
 }
 
-CallbackReturn UrRobotHW::on_activate(const rclcpp_lifecycle::State& previous_state)
+hardware_interface::CallbackReturn UrRobotHW::on_activate(const rclcpp_lifecycle::State& previous_state)
 {
   RCLCPP_INFO(rclcpp::get_logger("UrRobotHW"), "Starting ...please wait...");
 
@@ -201,7 +201,7 @@ CallbackReturn UrRobotHW::on_activate(const rclcpp_lifecycle::State& previous_st
 
 }
 
-CallbackReturn UrRobotHW::on_deactivate(const rclcpp_lifecycle::State& previous_state)
+hardware_interface::CallbackReturn UrRobotHW::on_deactivate(const rclcpp_lifecycle::State& previous_state)
 {
   RCLCPP_WARN(rclcpp::get_logger("UrRobotHW"), "stopping driver");
   #ifdef LOG
@@ -211,7 +211,7 @@ CallbackReturn UrRobotHW::on_deactivate(const rclcpp_lifecycle::State& previous_
   return CallbackReturn::SUCCESS;
 }
 
-hardware_interface::return_type UrRobotHW::read()
+hardware_interface::return_type UrRobotHW::read(const rclcpp::Time& time,const rclcpp::Duration& period)
 {
   std::vector<double> pos, vel, eff, tcp;
 
@@ -246,7 +246,7 @@ hardware_interface::return_type UrRobotHW::read()
 
 }
 
-hardware_interface::return_type UrRobotHW::write()
+hardware_interface::return_type UrRobotHW::write(const rclcpp::Time& time,const rclcpp::Duration& period)
 {
 
   if (position_controller_running_) {

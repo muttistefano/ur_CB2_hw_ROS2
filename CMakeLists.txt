@@ -41,7 +41,6 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
 
 add_library(cnr_ur_hardware_interface
   SHARED
-  #src/${PROJECT_NAME}/ur_hi_nodelet.cpp
   src/${PROJECT_NAME}/ur_hardware_interface.cpp
   src/${PROJECT_NAME}/ur_driver.cpp
   src/${PROJECT_NAME}/robot_state.cpp

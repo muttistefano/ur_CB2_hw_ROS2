@@ -1,7 +1,13 @@
 #ifndef __ITIA_UR_HARDWARE_INTERFACE__
 #define __ITIA_UR_HARDWARE_INTERFACE__
 
-#include "rclcpp/rclcpp.hpp"
+
+#include <memory>
+#include <string>
+#include <vector>
+#include <limits>
+
+// #include "rclcpp/rclcpp.hpp"
 
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
@@ -15,12 +21,14 @@
 
 // ROS
 #include "rclcpp/macros.hpp"
+#include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "geometry_msgs/msg/wrench.hpp"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
-
+// #include "controller_interface/controller_interface_base.hpp"
 #include <ur_hardware_interface/ur_driver.h>
+
 
 // using vector6d_t = std::array<double, 6>;
 using vector6d_t = std::vector<double>;
@@ -56,13 +64,13 @@ namespace cb2_hw
 
     std::vector<hardware_interface::CommandInterface> export_command_interfaces() final;
 
-    CallbackReturn on_activate(const rclcpp_lifecycle::State& previous_state) final;
-    CallbackReturn on_deactivate(const rclcpp_lifecycle::State& previous_state) final;
+    hardware_interface::CallbackReturn on_activate(const rclcpp_lifecycle::State& previous_state) final;
+    hardware_interface::CallbackReturn on_deactivate(const rclcpp_lifecycle::State& previous_state) final;
 
-    hardware_interface::return_type read() override;
-    hardware_interface::return_type write() override;
+    hardware_interface::return_type read(const rclcpp::Time& time, const rclcpp::Duration& period) final;
+    hardware_interface::return_type write(const rclcpp::Time& time, const rclcpp::Duration& period) final;
     
-    CallbackReturn on_init(const hardware_interface::HardwareInfo& system_info) final;
+    hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo& system_info) final;
     
     hardware_interface::return_type prepare_command_mode_switch(const std::vector<std::string>& start_interfaces,
                                                               const std::vector<std::string>& stop_interfaces) final;

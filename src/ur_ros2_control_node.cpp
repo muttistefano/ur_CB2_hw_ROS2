@@ -62,9 +62,9 @@ int main(int argc, char** argv)
     const rclcpp::Duration dt = rclcpp::Duration::from_seconds(1.0 / controller_manager->get_update_rate());
 
     while (rclcpp::ok()) {
-      controller_manager->read();
+      controller_manager->read(controller_manager->now(), dt);
       controller_manager->update(controller_manager->now(), dt);
-      controller_manager->write();
+      controller_manager->write(controller_manager->now(), dt);
     }
   });
 
