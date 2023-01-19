@@ -149,18 +149,6 @@ std::vector<hardware_interface::CommandInterface> UrRobotHW::export_command_inte
         info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &urcl_velocity_commands_[i]));
   }
 
-  // command_interfaces.emplace_back(
-  //     hardware_interface::CommandInterface("speed_scaling", "target_speed_fraction_cmd", &target_speed_fraction_cmd_));
-
-  // command_interfaces.emplace_back(hardware_interface::CommandInterface("payload", "mass", &payload_mass_));
-  // command_interfaces.emplace_back(
-  //     hardware_interface::CommandInterface("payload", "cog.x", &payload_center_of_gravity_[0]));
-  // command_interfaces.emplace_back(
-  //     hardware_interface::CommandInterface("payload", "cog.y", &payload_center_of_gravity_[1]));
-  // command_interfaces.emplace_back(
-  //     hardware_interface::CommandInterface("payload", "cog.z", &payload_center_of_gravity_[2]));
-  // command_interfaces.emplace_back(
-  //     hardware_interface::CommandInterface("payload", "payload_async_success", &payload_async_success_));
   //TODO payload
   return command_interfaces;
 
@@ -172,8 +160,6 @@ hardware_interface::CallbackReturn UrRobotHW::on_activate(const rclcpp_lifecycle
 
   std::string robot_ip   = info_.hardware_parameters["robot_ip"];
   int reverse_port       = stoi(info_.hardware_parameters["reverse_port"]);
-  // double max_payload     = stod(info_.hardware_parameters["max_payload"]);
-  // double speedj_timeout  = stod(info_.hardware_parameters["speedj_timeout"]);
 
   double max_payload     = 1.0;
 
@@ -192,6 +178,7 @@ hardware_interface::CallbackReturn UrRobotHW::on_activate(const rclcpp_lifecycle
     pos_init  = m_driver->rt_interface_->robot_state_->getQActual();
     for (unsigned int idx=0;idx<6;idx++)
       {
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("UrRobotHW"), "Initial Position joint " << idx << ": " << pos_init.at(idx));
         urcl_position_commands_.at(idx)=pos_init.at(idx);
         urcl_position_commands_old_.at(idx)=pos_init.at(idx);
       }
@@ -215,25 +202,16 @@ hardware_interface::return_type UrRobotHW::read(const rclcpp::Time& time,const r
 {
   std::vector<double> pos, vel, eff, tcp;
 
-  pos  = m_driver->rt_interface_->robot_state_->getQActual();
-  vel = m_driver->rt_interface_->robot_state_->getQdActual();
-  eff                    = m_driver->rt_interface_->robot_state_->getIActual();
-  m_tcp_force            = m_driver->rt_interface_->robot_state_->getTcpForce();
-  // std::vector<bool> dios = m_driver->rt_interface_->robot_state_->getDigitalInputBits();
+  pos             = m_driver->rt_interface_->robot_state_->getQActual();
+  vel             = m_driver->rt_interface_->robot_state_->getQdActual();
+  eff             = m_driver->rt_interface_->robot_state_->getIActual();
+  m_tcp_force     = m_driver->rt_interface_->robot_state_->getTcpForce();
 
   #ifdef LOG
   auto p1 = std::chrono::system_clock::now();
   out << pos[0] << "," << pos[1] << "," << pos[2] << "," << pos[3] << "," << pos[4] << "," << pos[5] << "," << std::chrono::duration_cast<std::chrono::microseconds>(p1.time_since_epoch()).count() << "\n";
   #endif
 
-  // wrench_message_.force.x=m_tcp_force.at(0);
-  // wrench_message_.force.y=m_tcp_force.at(1);
-  // wrench_message_.force.z=m_tcp_force.at(2);
-  // wrench_message_.torque.x=m_tcp_force.at(3);
-  // wrench_message_.torque.y=m_tcp_force.at(4);
-  // wrench_message_.torque.z=m_tcp_force.at(5);
-  // torque_pub_.publish(wrench_message_);
-  
   for (unsigned int idx=0;idx<6;idx++)
   {
     urcl_joint_positions_.at(idx)=pos.at(idx);
@@ -255,13 +233,11 @@ hardware_interface::return_type UrRobotHW::write(const rclcpp::Time& time,const 
                           ,0.016,0.05,700);
 
   } else if (velocity_controller_running_) {
-    RCLCPP_FATAL(rclcpp::get_logger("UrRobotHW"), "SPEED not yet tested");
+    // RCLCPP_FATAL(rclcpp::get_logger("UrRobotHW"), "SPEED not yet tested");
     m_driver->setSpeed(urcl_velocity_commands_.at(0), urcl_velocity_commands_.at(1), urcl_velocity_commands_.at(2)
                       , urcl_velocity_commands_.at(3), urcl_velocity_commands_.at(4), urcl_velocity_commands_.at(5)
-                      ,  m_acceleration_coeff*m_max_vel_change*125);
+                      ,  0.5);
 
-
-    
     // else {
     //   m_driver->writeKeepalive();
     // }

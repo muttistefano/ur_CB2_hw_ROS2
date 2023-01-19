@@ -162,9 +162,6 @@ def launch_setup(context, *args, **kwargs):
         [FindPackageShare(runtime_config_package), "config", controllers_file]
     )
 
-    rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare(description_package), "rviz", "view_robot.rviz"]
-    )
 
     # define update rate
     update_rate_config_file = PathJoinSubstitution(
@@ -191,51 +188,6 @@ def launch_setup(context, *args, **kwargs):
         output="screen",
     )
 
-    # dashboard_client_node = Node(
-    #     package="ur_robot_driver",
-    #     condition=IfCondition(launch_dashboard_client) and UnlessCondition(use_fake_hardware),
-    #     executable="dashboard_client",
-    #     name="dashboard_client",
-    #     output="screen",
-    #     emulate_tty=True,
-    #     parameters=[{"robot_ip": robot_ip}],
-    # )
-
-    # tool_communication_node = Node(
-    #     package="ur_robot_driver",
-    #     condition=IfCondition(use_tool_communication),
-    #     executable="tool_communication.py",
-    #     name="ur_tool_comm",
-    #     output="screen",
-    #     parameters=[
-    #         {
-    #             "robot_ip": robot_ip,
-    #             "tcp_port": tool_tcp_port,
-    #             "device_name": tool_device_name,
-    #         }
-    #     ],
-    # )
-
-    # controller_stopper_node = Node(
-    #     package="ur_robot_driver",
-    #     executable="controller_stopper_node",
-    #     name="controller_stopper",
-    #     output="screen",
-    #     emulate_tty=True,
-    #     condition=UnlessCondition(use_fake_hardware),
-    #     parameters=[
-    #         {"headless_mode": headless_mode},
-    #         {"joint_controller_active": activate_joint_controller},
-    #         {
-    #             "consistent_controllers": [
-    #                 "io_and_status_controller",
-    #                 "force_torque_sensor_broadcaster",
-    #                 "joint_state_broadcaster",
-    #                 "speed_scaling_state_broadcaster",
-    #             ]
-    #         },
-    #     ],
-    # )
 
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
@@ -244,26 +196,10 @@ def launch_setup(context, *args, **kwargs):
         parameters=[robot_description],
     )
 
-    rviz_node = Node(
-        package="rviz2",
-        condition=IfCondition(launch_rviz),
-        executable="rviz2",
-        name="rviz2",
-        output="log",
-        arguments=["-d", rviz_config_file],
-    )
-
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
-        output="screen",
-    )
-
-    io_and_status_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["io_and_status_controller", "-c", "/controller_manager"],
         output="screen",
     )
 
@@ -293,7 +229,14 @@ def launch_setup(context, *args, **kwargs):
         package="controller_manager",
         executable="spawner",
         # arguments=["forward_position_controller", "-c", "/controller_manager", "--stopped"],
-        arguments=["forward_position_controller", "-c", "/controller_manager"],
+        arguments=["forward_position_controller", "-c", "/controller_manager --stopped"],
+        output="screen",
+    )
+
+    cart_position_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["my_cartesian_motion_controller", "-c", "/controller_manager"],
         output="screen",
     )
 
@@ -308,18 +251,14 @@ def launch_setup(context, *args, **kwargs):
     nodes_to_start = [
         # ur_control_node,
         control_node,
-        # dashboard_client_node,
-        # tool_communication_node,
-        # controller_stopper_node,
         robot_state_publisher_node,
-        # rviz_node,
         joint_state_broadcaster_spawner,
-        # io_and_status_controller_spawner,
         # speed_scaling_state_broadcaster_spawner,
         force_torque_sensor_broadcaster_spawner,
+        cart_position_controller_spawner,
         # forward_position_controller_spawner_stopped,
         # initial_joint_controller_spawner_stopped,
-        initial_joint_controller_spawner_started,
+        # initial_joint_controller_spawner_started,
     ]
 
     return nodes_to_start
