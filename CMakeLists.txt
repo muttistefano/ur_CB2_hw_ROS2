@@ -85,7 +85,7 @@ install(
 )
 
 install(
-  DIRECTORY launch urdf config
+  DIRECTORY launch config
   DESTINATION share/${PROJECT_NAME}
 )
 

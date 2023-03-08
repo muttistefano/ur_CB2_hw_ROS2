@@ -30,7 +30,7 @@
 # Author: Denis Stogl
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, TimerAction
 from launch.actions import OpaqueFunction
 from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
@@ -82,80 +82,94 @@ def launch_setup(context, *args, **kwargs):
     )
 
 
+    # robot_description_content = Command(
+    #     [
+    #         PathJoinSubstitution([FindExecutable(name="xacro")]),
+    #         " ",
+    #         PathJoinSubstitution([FindPackageShare("ur_hardware_interface"), "urdf", description_file]),
+    #         " ",
+    #         "robot_ip:=",
+    #         robot_ip,
+    #         " ",
+    #         "joint_limit_params:=",
+    #         joint_limit_params,
+    #         " ",
+    #         "kinematics_params:=",
+    #         kinematics_params,
+    #         " ",
+    #         "physical_params:=",
+    #         physical_params,
+    #         " ",
+    #         "visual_params:=",
+    #         visual_params,
+    #         " ",
+    #         "safety_limits:=",
+    #         safety_limits,
+    #         " ",
+    #         "safety_pos_margin:=",
+    #         safety_pos_margin,
+    #         " ",
+    #         "safety_k_position:=",
+    #         safety_k_position,
+    #         " ",
+    #         "name:=",
+    #         ur_type,
+    #         " ",
+    #         "prefix:=",
+    #         prefix,
+    #         " ",
+    #         "use_fake_hardware:=",
+    #         use_fake_hardware,
+    #         " ",
+    #         "fake_sensor_commands:=",
+    #         fake_sensor_commands,
+    #         " ",
+    #         "headless_mode:=",
+    #         headless_mode,
+    #         " ",
+    #         "use_tool_communication:=",
+    #         use_tool_communication,
+    #         " ",
+    #         "tool_parity:=",
+    #         tool_parity,
+    #         " ",
+    #         "tool_baud_rate:=",
+    #         tool_baud_rate,
+    #         " ",
+    #         "tool_stop_bits:=",
+    #         tool_stop_bits,
+    #         " ",
+    #         "tool_rx_idle_chars:=",
+    #         tool_rx_idle_chars,
+    #         " ",
+    #         "tool_tx_idle_chars:=",
+    #         tool_tx_idle_chars,
+    #         " ",
+    #         "tool_device_name:=",
+    #         tool_device_name,
+    #         " ",
+    #         "tool_tcp_port:=",
+    #         tool_tcp_port,
+    #         " ",
+    #         "tool_voltage:=",
+    #         tool_voltage,
+    #         " ",
+    #     ]
+    # )
+    # robot_description = {"robot_description": robot_description_content}
+
     robot_description_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
-            PathJoinSubstitution([FindPackageShare("ur_hardware_interface"), "urdf", description_file]),
-            " ",
-            "robot_ip:=",
-            robot_ip,
-            " ",
-            "joint_limit_params:=",
-            joint_limit_params,
-            " ",
-            "kinematics_params:=",
-            kinematics_params,
-            " ",
-            "physical_params:=",
-            physical_params,
-            " ",
-            "visual_params:=",
-            visual_params,
-            " ",
-            "safety_limits:=",
-            safety_limits,
-            " ",
-            "safety_pos_margin:=",
-            safety_pos_margin,
-            " ",
-            "safety_k_position:=",
-            safety_k_position,
-            " ",
-            "name:=",
-            ur_type,
-            " ",
-            "prefix:=",
-            prefix,
-            " ",
-            "use_fake_hardware:=",
-            use_fake_hardware,
-            " ",
-            "fake_sensor_commands:=",
-            fake_sensor_commands,
-            " ",
-            "headless_mode:=",
-            headless_mode,
-            " ",
-            "use_tool_communication:=",
-            use_tool_communication,
-            " ",
-            "tool_parity:=",
-            tool_parity,
-            " ",
-            "tool_baud_rate:=",
-            tool_baud_rate,
-            " ",
-            "tool_stop_bits:=",
-            tool_stop_bits,
-            " ",
-            "tool_rx_idle_chars:=",
-            tool_rx_idle_chars,
-            " ",
-            "tool_tx_idle_chars:=",
-            tool_tx_idle_chars,
-            " ",
-            "tool_device_name:=",
-            tool_device_name,
-            " ",
-            "tool_tcp_port:=",
-            tool_tcp_port,
-            " ",
-            "tool_voltage:=",
-            tool_voltage,
-            " ",
+            PathJoinSubstitution([FindPackageShare(description_package), "urdf", description_file]),
+            " ","name:=","azrael",
+            " ","ur_type:=","ur10",
+            " ","prefix:=","azrael/",
+            " ","robot_ip:=",robot_ip,
         ]
     )
+
     robot_description = {"robot_description": robot_description_content}
 
     initial_joint_controllers = PathJoinSubstitution(
@@ -184,6 +198,7 @@ def launch_setup(context, *args, **kwargs):
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
+        # arguments=['--ros-args', '--log-level', "debug"],
         parameters=[robot_description, update_rate_config_file, initial_joint_controllers],
         output="screen",
     )
@@ -225,11 +240,18 @@ def launch_setup(context, *args, **kwargs):
         output="screen",
     )
 
-    forward_position_controller_spawner_stopped = Node(
+    forward_position_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        # arguments=["forward_position_controller", "-c", "/controller_manager", "--stopped"],
-        arguments=["forward_position_controller", "-c", "/controller_manager --stopped"],
+        arguments=["forward_position_controller", "-c", "/controller_manager", "--inactive"],
+        # arguments=["forward_position_controller", "-c", "/controller_manager "],
+        output="screen",
+    )
+
+    forward_velocity_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["forward_velocity_controller", "-c", "/controller_manager","--inactive"],
         output="screen",
     )
 
@@ -247,16 +269,28 @@ def launch_setup(context, *args, **kwargs):
         arguments=[initial_joint_controller, "-c", "/controller_manager"],
     )
 
+    imm_controller = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["imm", "-c", "/controller_manager"],
+        output="screen",
+    )
 
     nodes_to_start = [
         # ur_control_node,
         control_node,
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,
+        TimerAction(
+                period=2.0,
+                actions=[imm_controller],
+                ),
+
         # speed_scaling_state_broadcaster_spawner,
-        force_torque_sensor_broadcaster_spawner,
-        cart_position_controller_spawner,
-        # forward_position_controller_spawner_stopped,
+        # force_torque_sensor_broadcaster_spawner,
+        # forward_velocity_controller_spawner,
+        # cart_position_controller_spawner,
+        # forward_position_controller_spawner,
         # initial_joint_controller_spawner_stopped,
         # initial_joint_controller_spawner_started,
     ]
@@ -320,7 +354,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_package",
-            default_value="ur_description",
+            default_value="azrael_description",
             description="Description package with robot URDF/XACRO files. Usually the argument \
         is not set, it enables use of a custom description.",
         )
@@ -328,7 +362,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_file",
-            default_value="ur.urdf.xacro",
+            default_value="system.urdf.xacro",
             description="URDF/XACRO description file with the robot.",
         )
     )

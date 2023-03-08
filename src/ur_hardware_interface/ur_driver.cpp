@@ -90,6 +90,7 @@ void UrDriver::halt() {
 void UrDriver::setSpeed(double q0, double q1, double q2, double q3, double q4,
 		double q5, double acc) {
 	rt_interface_->setSpeed(q0, q1, q2, q3, q4, q5, acc);
+	// std::cout << "OUT" << q0 <<" " << q1<<" " << q2<<" " << q3<<" " << q4<<" " << q5<<" " << acc<<"\n" << std::flush;	
 }
 
 void UrDriver::stop(const double& acc)

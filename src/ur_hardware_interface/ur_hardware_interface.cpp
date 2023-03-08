@@ -230,13 +230,18 @@ hardware_interface::return_type UrRobotHW::write(const rclcpp::Time& time,const 
   if (position_controller_running_) {
     m_driver->setPosition(urcl_position_commands_.at(0),urcl_position_commands_.at(1),urcl_position_commands_.at(2)
                           ,urcl_position_commands_.at(3),urcl_position_commands_.at(4),urcl_position_commands_.at(5)
+                          // ,0.008,0.1,300);
                           ,0.016,0.05,700);
+    // std::cout << "MEGAOUT" << urcl_position_commands_.at(0) <<" " << urcl_position_commands_.at(1)<<" " << urcl_position_commands_.at(2)<<" " << urcl_position_commands_.at(3)
+                          //  <<" " << urcl_position_commands_.at(4)<<" " << urcl_position_commands_.at(5)<<" " <<"\n" << std::flush;	
 
   } else if (velocity_controller_running_) {
     // RCLCPP_FATAL(rclcpp::get_logger("UrRobotHW"), "SPEED not yet tested");
     m_driver->setSpeed(urcl_velocity_commands_.at(0), urcl_velocity_commands_.at(1), urcl_velocity_commands_.at(2)
                       , urcl_velocity_commands_.at(3), urcl_velocity_commands_.at(4), urcl_velocity_commands_.at(5)
                       ,  0.5);
+    // std::cout << "MEGAOUT" << urcl_velocity_commands_.at(0) <<" " << urcl_velocity_commands_.at(1)<<" " << urcl_velocity_commands_.at(2)<<" " << urcl_velocity_commands_.at(3)
+                          //  <<" " << urcl_velocity_commands_.at(4)<<" " << urcl_velocity_commands_.at(5)<<" " <<"\n" << std::flush;	
 
     // else {
     //   m_driver->writeKeepalive();
