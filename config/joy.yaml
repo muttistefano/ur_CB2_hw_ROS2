@@ -11,8 +11,10 @@ teleop_twist_joy_node:
     axis_angular:
       roll: 3
       yaw: 4
+      pitch: 6
     scale_angular:
       roll: 0.2
       yaw: 0.2
+      pitch: 0.2
     enable_button: 5
     enable_turbo_button: 8

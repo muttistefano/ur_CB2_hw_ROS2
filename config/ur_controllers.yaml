@@ -99,9 +99,9 @@ imm:
       - azrael/wrist_3_joint
     interface_name: position
     robot_chain_root: azrael/base_link
-    # robot_chain_root: azrael/base_footprint
     robot_chain_tip:  azrael/tool0
     amr_base_link:  azrael/base_footprint
+    only_robot: true
 
 
 speed_scaling_state_broadcaster:
